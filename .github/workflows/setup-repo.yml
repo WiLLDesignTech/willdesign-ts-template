@@ -1,0 +1,95 @@
+name: Setup Repository
+
+on:
+  push:
+    branches: [staging]
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  setup:
+    name: Setup branches and protection
+    runs-on: ubuntu-latest
+    if: github.run_number == 1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create main branch if missing
+        run: |
+          if ! git ls-remote --heads origin main | grep -q main; then
+            echo "Creating main branch from staging..."
+            git checkout -b main
+            git push origin main
+          else
+            echo "main branch already exists"
+          fi
+
+      - name: Enable auto-delete head branches
+        run: |
+          gh api repos/${{ github.repository }} -X PATCH \
+            -F delete_branch_on_merge=true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Protect staging branch
+        run: |
+          gh api repos/${{ github.repository }}/branches/staging/protection -X PUT \
+            --input - <<'RULES'
+          {
+            "required_status_checks": {
+              "strict": true,
+              "contexts": ["Lint, Type Check & Test", "Build"]
+            },
+            "enforce_admins": false,
+            "required_pull_request_reviews": {
+              "required_approving_review_count": 1,
+              "dismiss_stale_reviews": true
+            },
+            "restrictions": null,
+            "allow_force_pushes": false,
+            "allow_deletions": false
+          }
+          RULES
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Protect main branch
+        run: |
+          gh api repos/${{ github.repository }}/branches/main/protection -X PUT \
+            --input - <<'RULES'
+          {
+            "required_status_checks": {
+              "strict": true,
+              "contexts": ["Lint, Type Check & Test", "Build"]
+            },
+            "enforce_admins": false,
+            "required_pull_request_reviews": {
+              "required_approving_review_count": 1,
+              "dismiss_stale_reviews": true
+            },
+            "restrictions": null,
+            "allow_force_pushes": false,
+            "allow_deletions": false
+          }
+          RULES
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup summary
+        run: |
+          echo "## Repository Setup Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Default branch: **staging** (auto-deploys to staging)" >> $GITHUB_STEP_SUMMARY
+          echo "- Production branch: **main** (auto-deploys to production)" >> $GITHUB_STEP_SUMMARY
+          echo "- Auto-delete feature branches: **enabled**" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch protection: **staging** (1 approval) + **main** (1 approval)" >> $GITHUB_STEP_SUMMARY
+          echo "- Force push: **blocked** on both branches" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Next steps:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Update \`package.json\` with your project name" >> $GITHUB_STEP_SUMMARY
+          echo "2. Add project-specific build/test/lint scripts" >> $GITHUB_STEP_SUMMARY
+          echo "3. Add deployment workflows if needed" >> $GITHUB_STEP_SUMMARY
