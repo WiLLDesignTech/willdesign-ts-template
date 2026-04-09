@@ -14,6 +14,23 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  # Enforce: only staging and hotfix/* branches can target main
+  check-pr-source:
+    name: PR Source Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    steps:
+      - name: Verify source branch
+        run: |
+          SOURCE="${{ github.head_ref }}"
+          if [[ "$SOURCE" == "staging" || "$SOURCE" == hotfix/* ]]; then
+            echo "Allowed: $SOURCE → main"
+          else
+            echo "::error::Only 'staging' and 'hotfix/*' branches can target main. Got: '$SOURCE'"
+            echo "Create a PR to staging first, then promote staging → main."
+            exit 1
+          fi
+
   quality:
     name: Lint, Type Check & Test
     runs-on: ubuntu-latest

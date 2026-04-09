@@ -13,15 +13,15 @@ Template repository for new WiLLDesignTech TypeScript projects. Includes commit 
 
 On the **first push**, the `setup-repo.yml` workflow runs and configures:
 
-| Setting | Value |
-|---------|-------|
-| Default branch | `staging` |
-| Production branch | `main` (created automatically) |
-| Auto-delete feature branches | Enabled |
-| Staging protection | 1 developer approval, status checks, no force push |
-| Main protection | 1 approval, status checks, no force push |
-| Branch deletion | Blocked on main + staging |
-| Stale review dismissal | Enabled |
+| Setting                      | Value                                              |
+| ---------------------------- | -------------------------------------------------- |
+| Default branch               | `staging`                                          |
+| Production branch            | `main` (created automatically)                     |
+| Auto-delete feature branches | Enabled                                            |
+| Staging protection           | 1 developer approval, status checks, no force push |
+| Main protection              | 1 approval, status checks, no force push           |
+| Branch deletion              | Blocked on main + staging                          |
+| Stale review dismissal       | Enabled                                            |
 
 ### What requires manual setup (org admin)
 
@@ -33,18 +33,18 @@ The automated workflow cannot enforce team-based review requirements. An org adm
 
 ## What's Included
 
-| File | Purpose |
-|------|---------|
-| `package.json` | Base dependencies — commitlint, ESLint, prettier, husky, TypeScript 6.0 |
-| `commitlint.config.mts` | Conventional commit enforcement (feat, fix, hotfix, eod, etc.) |
-| `.lintstagedrc.json` | Auto-lint and format staged files on commit |
-| `.prettierrc` | Code formatting rules |
-| `.nvmrc` | Node.js 22 LTS |
-| `.gitignore` | Standard ignores for Node.js / TypeScript projects |
-| `.husky/pre-commit` | Runs lint-staged before every commit |
-| `.husky/commit-msg` | Validates commit message format |
-| `.github/workflows/ci.yml` | CI pipeline (lint, typecheck, test, build) |
-| `.github/workflows/setup-repo.yml` | One-time repo setup (branches, protection, auto-delete) |
+| File                               | Purpose                                                                 |
+| ---------------------------------- | ----------------------------------------------------------------------- |
+| `package.json`                     | Base dependencies — commitlint, ESLint, prettier, husky, TypeScript 6.0 |
+| `commitlint.config.mts`            | Conventional commit enforcement (feat, fix, hotfix, eod, etc.)          |
+| `.lintstagedrc.json`               | Auto-lint and format staged files on commit                             |
+| `.prettierrc`                      | Code formatting rules                                                   |
+| `.nvmrc`                           | Node.js 22 LTS                                                          |
+| `.gitignore`                       | Standard ignores for Node.js / TypeScript projects                      |
+| `.husky/pre-commit`                | Runs lint-staged before every commit                                    |
+| `.husky/commit-msg`                | Validates commit message format                                         |
+| `.github/workflows/ci.yml`         | CI pipeline (lint, typecheck, test, build)                              |
+| `.github/workflows/setup-repo.yml` | One-time repo setup (branches, protection, auto-delete)                 |
 
 ## Branching Strategy
 
@@ -59,14 +59,16 @@ feature/PROJ-123 ─── PR (1 dev approval) ──→ staging (*.staging.wilr
                                               main (*.wilreji.com)
 ```
 
-| Branch | Deploys to | Approval |
-|--------|-----------|----------|
-| `staging` | `*.staging.wilreji.com` | 1 developer |
-| `main` | `*.wilreji.com` (production) | 1 senior-dev |
+| Target    | Source                             | Merge method     | Approval     |
+| --------- | ---------------------------------- | ---------------- | ------------ |
+| `staging` | `feat/*`, `fix/*`, `chore/*`, etc. | **Squash**       | 1 developer  |
+| `main`    | `staging` or `hotfix/*` only       | **Merge commit** | 1 senior-dev |
 
 - Feature branches are auto-deleted after merge (restorable for 90 days)
-- Hotfixes go directly to `main`, then cherry-pick to `staging`
+- Hotfixes: `hotfix/*` → `main` directly, then cherry-pick to `staging`
 - Force push is blocked on all protected branches
+- Only `staging` and `hotfix/*` can target `main` (enforced by CI check)
+- All other branches must go through `staging` first
 
 ## After Creating from Template
 
