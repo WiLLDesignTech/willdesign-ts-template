@@ -1,5 +1,15 @@
 name: Setup Repository
 
+# Runs ONCE on the first push to staging (when repo is created from template).
+# Creates the main branch, sets branch protection, and enables auto-delete.
+#
+# What this CANNOT do (requires org admin):
+# - Require specific team (senior-dev) for main branch approvals
+# - Set org-level rulesets
+#
+# After this runs, an org admin should manually add the senior-dev team
+# requirement to the main branch. See the summary output for instructions.
+
 on:
   push:
     branches: [staging]
@@ -35,7 +45,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Protect staging branch
+      - name: Protect staging branch (1 developer approval)
         run: |
           gh api repos/${{ github.repository }}/branches/staging/protection -X PUT \
             --input - <<'RULES'
@@ -57,7 +67,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Protect main branch
+      - name: Protect main branch (1 approval — senior-dev team must be added manually)
         run: |
           gh api repos/${{ github.repository }}/branches/main/protection -X PUT \
             --input - <<'RULES'
@@ -83,13 +93,24 @@ jobs:
         run: |
           echo "## Repository Setup Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Automated (done)" >> $GITHUB_STEP_SUMMARY
           echo "- Default branch: **staging** (auto-deploys to staging)" >> $GITHUB_STEP_SUMMARY
-          echo "- Production branch: **main** (auto-deploys to production)" >> $GITHUB_STEP_SUMMARY
+          echo "- Production branch: **main** (created from staging)" >> $GITHUB_STEP_SUMMARY
           echo "- Auto-delete feature branches: **enabled**" >> $GITHUB_STEP_SUMMARY
           echo "- Branch protection: **staging** (1 approval) + **main** (1 approval)" >> $GITHUB_STEP_SUMMARY
           echo "- Force push: **blocked** on both branches" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch deletion: **blocked** on both branches" >> $GITHUB_STEP_SUMMARY
+          echo "- Stale review dismissal: **enabled**" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Next steps:" >> $GITHUB_STEP_SUMMARY
-          echo "1. Update \`package.json\` with your project name" >> $GITHUB_STEP_SUMMARY
-          echo "2. Add project-specific build/test/lint scripts" >> $GITHUB_STEP_SUMMARY
-          echo "3. Add deployment workflows if needed" >> $GITHUB_STEP_SUMMARY
+          echo "### Manual (org admin required)" >> $GITHUB_STEP_SUMMARY
+          echo "1. Go to **Settings > Branches > main > Edit**" >> $GITHUB_STEP_SUMMARY
+          echo "2. Under 'Require pull request reviews', enable **Require review from Code Owners** or restrict to **senior-dev** team" >> $GITHUB_STEP_SUMMARY
+          echo "3. Verify CI status check names match your project's workflow job names" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Developer checklist" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Update \`package.json\` with project name and description" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Add project-specific scripts (build, test, typecheck, dev)" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Add deployment workflows for staging and production" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Add ESLint config (\`eslint.config.mjs\`)" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Add TypeScript config (\`tsconfig.json\`)" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Register in SSO if the app needs authentication" >> $GITHUB_STEP_SUMMARY
