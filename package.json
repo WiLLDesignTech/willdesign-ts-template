@@ -7,13 +7,17 @@
     "node": ">=22.12.0",
     "pnpm": ">=9.0.0"
   },
+  "packageManager": "pnpm@10.14.0",
   "scripts": {
     "prepare": "husky",
     "commitlint": "commitlint --edit",
-    "lint": "eslint src/",
-    "lint:fix": "eslint src/ --fix",
-    "format": "prettier --write 'src/**/*.{ts,tsx,json,css}'",
-    "format:check": "prettier --check 'src/**/*.{ts,tsx,json,css}'"
+    "lint": "echo 'Add eslint config and update this script'",
+    "lint:fix": "echo 'Add eslint config and update this script'",
+    "typecheck": "echo 'Add tsconfig.json and update this script'",
+    "test": "echo 'No tests configured yet' && exit 0",
+    "build": "echo 'Add build script for your project' && exit 0",
+    "format": "prettier --write '**/*.{ts,tsx,json,css,md}'",
+    "format:check": "prettier --check '**/*.{ts,tsx,json,css,md}'"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
