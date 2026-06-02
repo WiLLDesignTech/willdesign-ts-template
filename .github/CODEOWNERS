@@ -1,0 +1,5 @@
+# CODEOWNERS — default reviewers for this repository
+# Docs: https://docs.github.com/articles/about-code-owners
+#
+# The senior-dev team is the default owner for everything in this repo.
+* @WiLLDesignTech/senior-dev
