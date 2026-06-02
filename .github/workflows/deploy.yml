@@ -1,0 +1,44 @@
+# Golden-path deploy caller (per willdesign-rules infra-deploy-contract §7).
+#
+# This is the ENTIRE per-repo deploy workflow. It reads .deploy.yml for
+# {project, service, deploy-type} and delegates to the platform-ci reusable
+# deployer keyed by deploy-type. No resource-ID plumbing lives in app repos —
+# the reusable workflow resolves all coordinates from the SSM registry
+# (/{project}/{env}/registry/*) internally via the resolve-infra resolver (§2a).
+#
+# NOTE (OPEN DECISION OD-4): deploy-by-type.yml / ecs-deploy.yml / static-deploy.yml
+# in platform-ci are planned (WRDS-214 / WRDS-307) but not yet live. This caller is
+# the TARGET-STATE golden path. Until the reusable deployers land, a repo wires its
+# own deploy following infra-deploy-contract §2 + §6.
+
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: Target environment
+        required: true
+        type: choice
+        options: [staging, preprod, prod]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  authorize:
+    uses: WiLLDesignTech/platform-ci/.github/workflows/deploy-authz.yml@main
+    with:
+      env: ${{ inputs.env }}
+    secrets:
+      BOT_PRIVATE_KEY: ${{ secrets.BOT_PRIVATE_KEY }}
+
+  deploy:
+    needs: authorize
+    if: needs.authorize.outputs.authorized == 'true'
+    uses: WiLLDesignTech/platform-ci/.github/workflows/deploy-by-type.yml@main
+    with:
+      manifest: .deploy.yml          # platform-ci reads project / service / deploy-type
+      env: ${{ inputs.env }}
+    secrets: inherit
