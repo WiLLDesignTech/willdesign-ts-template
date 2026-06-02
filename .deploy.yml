@@ -1,0 +1,27 @@
+# .deploy.yml — golden-path deploy manifest (per willdesign-rules infra-deploy-contract §7).
+#
+# This single file is the ENTIRE per-repo integration surface with the platform-ci
+# deploy layer. Fork this template, then replace the project slug, service, and
+# deploy-type below. See development/infra-deploy-contract.md §7 in willdesign-rules.
+#
+# Identity tuple = {project, env, service}. The AWS account/region is implied by the
+# OIDC deploy role; registry-region below is the region whose SSM registry holds the
+# /{project}/{env}/registry/* coordinates this repo's deployer resolves.
+
+project: willdesign-project-name   # lowercase project slug — must match aws-resource-naming.md
+service: api                       # the service slice (omit for single-service projects)
+deploy-type: ecs                   # one of: ecs | static | lambda | k8s
+registry-region: ap-northeast-1    # region of the SSM registry — set to where THIS project's infra lives.
+                                   # Org region standard is mid-flip (SE1 -> NE1 canonical, 2026-06-01;
+                                   # doc-rewrite pending). WilReji infra is ap-northeast-1 (Tokyo). Set
+                                   # explicitly per project; do not assume.
+
+envs:
+  staging:
+    branch: staging                # auto-deploy on push to this branch
+  preprod:
+    manual: true                   # manual workflow_dispatch only
+  prod:
+    tags: 'v*.*.*'                 # tag-triggered release (external customer-facing apps)
+    # OR, during a beta-prod / disposable-prod period, branch-deploy instead of tags:
+    # branch: staging              # see infra-deploy-contract.md §11 + deployment-policy.md

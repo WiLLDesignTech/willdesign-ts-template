@@ -1,0 +1,8 @@
+# Default owners for everything in this template.
+# Forked repos should replace senior-dev with the owning product team
+# (e.g. @WiLLDesignTech/wilreji).
+* @WiLLDesignTech/senior-dev
+
+# Deploy manifest + caller are infra-contract-governed surfaces — keep senior-dev review.
+/.deploy.yml @WiLLDesignTech/senior-dev
+/.github/workflows/deploy.yml @WiLLDesignTech/senior-dev
