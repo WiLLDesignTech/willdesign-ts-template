@@ -1,0 +1,38 @@
+# Service catalog descriptor — OpsLevel/Port-compatible.
+# Update all fields for your specific service.
+# Schema: willdesign-rules/development/per-repo-doc-standard.md §6
+apiVersion: willdesign.tech/v1
+kind: Component
+metadata:
+  name: REPLACE-ME              # kebab-case repo name
+  title: REPLACE-ME             # human-readable service title
+  description: REPLACE-ME       # one-line description
+  annotations:
+    github.com/repo: WiLLDesignTech/REPLACE-ME
+    willdesign.tech/jira-project: WRDS
+    willdesign.tech/pagerduty-service: ""    # fill when on-call exists
+    willdesign.tech/slack-channel: "#general-dev"
+spec:
+  type: service          # service | library | tool | infra
+  lifecycle: experimental  # experimental | staging | production | deprecated
+  owner: senior-dev
+  tier: 2                # 1=customer-facing, 2=internal, 3=tooling
+  language: typescript
+  runtime: nodejs
+  deploymentTarget: aws-ecs-fargate   # or: static-site | lambda | library
+  region: ap-northeast-1
+  environments:
+    staging:
+      url: https://REPLACE-ME.staging.wilreji.com
+      branch: staging
+    production:
+      url: https://REPLACE-ME.wilreji.com
+      tag_pattern: "v*.*.*"
+  dependencies: []          # list: service-name, mongodb-atlas/clusterName, etc.
+  links:
+    - title: Pipeline Catalog
+      url: https://docs.wilreji.com/rules/development/pipeline-catalog
+    - title: Architecture
+      url: https://github.com/WiLLDesignTech/REPLACE-ME/blob/staging/ARCHITECTURE.md
+    - title: Runbooks
+      url: https://github.com/WiLLDesignTech/REPLACE-ME/tree/staging/docs/runbooks

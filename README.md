@@ -81,6 +81,10 @@ feature/PROJ-123 ─── PR (1 dev approval) ──→ staging (*.staging.wilr
    - Build/test/dev scripts in `package.json`
    - Deployment workflows for staging and production
 5. Register in SSO if the app needs authentication
+6. Update `catalog-info.yaml` (replace all `REPLACE-ME` fields)
+7. Update `ARCHITECTURE.md` (replace with actual architecture)
+8. Update `CODEOWNERS` (adjust team/directory ownership as needed)
+9. Add first ADR to `docs/adr/` if you made a significant architectural decision
 
 ## Important
 
@@ -88,9 +92,20 @@ This template provides common rules as a starting point. It is every developer's
 responsibility to cross-check and adapt these rules to the specific project's
 requirements. The template is a baseline, not a final configuration.
 
+## Files Included (template stubs to fill in)
+
+| File | Purpose |
+|---|---|
+| `catalog-info.yaml` | Service catalog descriptor — fill in all `REPLACE-ME` fields |
+| `ARCHITECTURE.md` | Architecture overview — replace with actual design |
+| `CODEOWNERS` | Review routing — adjust team/directory ownership |
+| `docs/adr/0000-template.md` | ADR template — copy + number for each significant decision |
+| `docs/runbooks/service-down.md` | First-responder runbook — adapt to your service |
+
 ## References
 
+- [How This Org Runs](https://github.com/WiLLDesignTech/willdesign-rules/blob/main/development/how-this-org-runs.md)
+- [Per-Repo Doc Standard](https://github.com/WiLLDesignTech/willdesign-rules/blob/main/development/per-repo-doc-standard.md)
 - [Branching Strategy](https://github.com/WiLLDesignTech/willdesign-rules/blob/main/development/branching-strategy.md)
 - [Git Workflow Policy](https://github.com/WiLLDesignTech/willdesign-rules/blob/main/development/git-workflow.md)
-- [Commit Convention](https://github.com/WiLLDesignTech/willdesign-rules/blob/main/development/git-workflow.md#5-commit-messages)
-- [CI/CD Standards](https://github.com/WiLLDesignTech/willdesign-rules/blob/main/development/ci-cd-pipeline-standards.md)
+- [Pipeline Catalog](https://github.com/WiLLDesignTech/willdesign-rules/blob/main/development/pipeline-catalog.md)
