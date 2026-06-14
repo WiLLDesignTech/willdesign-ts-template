@@ -1,0 +1,9 @@
+# CODEOWNERS
+# Require senior-dev review on all changes.
+# Update paths if specific directories have different owners.
+
+* @WiLLDesignTech/senior-dev
+
+# Infra / deployment config — always senior-dev
+.deploy.yml @WiLLDesignTech/senior-dev
+.github/ @WiLLDesignTech/senior-dev
