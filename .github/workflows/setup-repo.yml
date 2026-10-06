@@ -21,7 +21,8 @@ permissions:
 jobs:
   setup:
     name: Setup branches and protection
-    runs-on: ubuntu-latest
+    # Org-standard central runner routing (willdesign-rules runner-routing.md).
+    runs-on: ${{ fromJSON(vars.LINUX_RUNNER_CURRENT || '"ubuntu-latest"') }}
     if: github.run_number == 1
     steps:
       - uses: actions/checkout@v4
