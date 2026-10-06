@@ -17,7 +17,8 @@ jobs:
   # Enforce: only staging and hotfix/* branches can target main
   check-pr-source:
     name: PR Source Check
-    runs-on: ubuntu-latest
+    # Org-standard central runner routing (willdesign-rules runner-routing.md).
+    runs-on: ${{ fromJSON(vars.LINUX_RUNNER_CURRENT || '"ubuntu-latest"') }}
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
     steps:
       - name: Verify source branch
@@ -33,7 +34,8 @@ jobs:
 
   quality:
     name: Lint, Type Check & Test
-    runs-on: ubuntu-latest
+    # Org-standard central runner routing (willdesign-rules runner-routing.md).
+    runs-on: ${{ fromJSON(vars.LINUX_RUNNER_CURRENT || '"ubuntu-latest"') }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -49,7 +51,8 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-latest
+    # Org-standard central runner routing (willdesign-rules runner-routing.md).
+    runs-on: ${{ fromJSON(vars.LINUX_RUNNER_CURRENT || '"ubuntu-latest"') }}
     timeout-minutes: 10
     needs: [quality]
     steps:
